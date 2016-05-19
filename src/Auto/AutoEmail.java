@@ -15,21 +15,22 @@ import java.text.SimpleDateFormat;
 */
 public class AutoEmail {
 	static boolean fail = false;
-	static String Log, logLoc, fails[][];
+	static String Log = "", logLoc, fails[][];
 	static int noCC = 5, failCnt=0;	
 	static Exel E;
 	static String output;
-	static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	static Date date = new Date();
 	/*
 	 *   Main  
 	*/
 	public static void main(String[] args) throws FileNotFoundException, IOException{
-		logLoc = Exel.Location()+ args[0]+dateFormat.format(date)+"Log.txt";
+		logLoc = Exel.Location()+ args[0]+"_Log_"+dateFormat.format(date)+".txt";
+		Prnt(logLoc);
 		E = new Exel(args[0]+".xlsx", noCC);
 		E.readCofig();
 		int R = E.getNoRows();
-		System.out.println(R);
+		Prnt("Number of rosw: "+R);
 		for(int row=1;row<R;row++){		
 			if(Exel.ReadNextRow(row)){												//Reading excel row	
 				DelPrevRep(E.getReport());											//Delete previous report 
@@ -39,6 +40,7 @@ public class AutoEmail {
 				ExcuteCmd(E.getFabCmd());											//fabooti email command	
 			}
 		}	
+		CreateErrorLog();
 		System.out.println("Fin");			
 	}
 	/*
@@ -57,22 +59,22 @@ public class AutoEmail {
 			    output = s;
 			}	
 			if(output.contains("e-mail(s) sent without errors")){
-				System.out.println("E-mail sent Succesfully");
+				Prnt("E-mail sent Succesfully");
 				fail = false;
 			}
 			else if(output.contains("Succeeded")){
-				System.out.println("Login Succeeded");
+				Prnt("Login Succeeded");
 			}
 			else if(output.contains("Saved")){
-				System.out.println("File Creation Succeeded");
+				Prnt("File Creation Succeeded");
 			}
 			else{
 				fail = true;
-				System.out.println(output);
+				Prnt(output);
 			}
 			while ((s = stdError.readLine()) != null) {
-				System.out.println("Here is the standard error of the command (if any):\n");
-			    System.out.println(s);						// any errors from the attempted command			    
+				Prnt("Here is the standard error of the command (if any):\n");
+			    Prnt(s);						// any errors from the attempted command			    
 			}
 		}
 		catch(Exception e){
@@ -88,7 +90,7 @@ public class AutoEmail {
 	      try{
 	    	 f = new File(s);
 	         bool = f.delete();	
-	         System.out.println("File deleted: "+E.getParam1()+": "+bool);		            
+	         Prnt("File deleted: "+E.getParam1()+": "+bool);		            
 	      }
 	      catch(Exception e){
 	         e.printStackTrace();
@@ -103,7 +105,7 @@ public class AutoEmail {
 	      try{
 	    	 f = new File(s);
 	         bool = f.exists();
-	         System.out.println("File Created: "+E.getParam1()+": "+bool);		            
+	         Prnt("File Created: "+E.getParam1()+": "+bool);		            
 	      }
 	      catch(Exception e){
 	         e.printStackTrace();
@@ -115,11 +117,21 @@ public class AutoEmail {
 	static void CreateErrorLog() {
 		File f = null;	            
 		try{
-			f = new File(logLoc);
-			f.delete();	
+			f = new File(logLoc);	
 		    f.createNewFile();
+		    FileWriter fw = new FileWriter(f.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(Log);
+			bw.close();
 		}catch(Exception e){
 	         e.printStackTrace();
 	    }	    
+	}
+	/*
+	 *   Keeps log of all output.
+	*/
+	static void Prnt(String output) {
+		System.out.println(output);
+		Log += output+ System.getProperty("line.separator");
 	}
 }
