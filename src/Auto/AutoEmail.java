@@ -112,7 +112,7 @@ public class AutoEmail {
 	      }
 	   }
 	/*
-	 *   
+	 *   Writes the log of output to txt file
 	*/
 	static void CreateErrorLog() {
 		File f = null;	            
