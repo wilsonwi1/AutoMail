@@ -26,7 +26,7 @@ public class AutoEmail {
 	*/
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		logLoc = Exel.Location()+ args[0]+"_Log_"+dateFormat.format(date)+".txt";
-		Prnt(logLoc);
+		//Prnt(logLoc);
 		E = new Exel(args[0]+".xlsx", noCC);
 		E.readCofig();
 		int R = E.getNoRows();
@@ -37,7 +37,7 @@ public class AutoEmail {
 				ExcuteCmd(E.getTabLoginCmd());										//Tableau Login command
 				ExcuteCmd(E.getTabRepReqCmd());										//Tableau report request command
 				Check(E.getReport());												//Check File Created
-				ExcuteCmd(E.getFabCmd());											//fabooti email command	
+				//ExcuteCmd(E.getFabCmd());											//fabooti email command	
 			}
 		}	
 		CreateErrorLog();
